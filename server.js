@@ -1,10 +1,62 @@
-import { launch } from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import fs from "fs";
 
 (async () => {
   const handleFetch = async (ruc) => {
-    const browser = await launch({
+    const apiKey = "4bbd8b9f15fa19d04aca9bf0c5aa6c94";
+    if (fs.existsSync("./plugin/js/config_ac_api_key.js")) {
+      let confData = fs.readFileSync(
+        "./plugin/js/config_ac_api_key.js",
+        "utf8"
+      );
+      confData = confData.replace(
+        /antiCapthaPredefinedApiKey = ''/g,
+        `antiCapthaPredefinedApiKey = '${apiKey}'`
+      );
+      fs.writeFileSync("./plugin/js/config_ac_api_key.js", confData, "utf8");
+    } else {
+      console.error("plugin configuration not found!");
+    }
+    puppeteer.use(StealthPlugin());
+    const browser = await puppeteer.launch({
       // headless: false,
-      // defaultViewport: null,
+      defaultViewport: null,
+      ignoreDefaultArgs: ["--disable-extensions", "--enable-automation"],
+      args: [
+        "--disable-web-security",
+        "--disable-features=IsolateOrigins,site-per-process",
+        "--allow-running-insecure-content",
+        "--disable-blink-features=AutomationControlled",
+        "--no-sandbox",
+        "--mute-audio",
+        "--no-zygote",
+        "--no-xshm",
+        "--window-size=1920,1080",
+        "--no-first-run",
+        "--no-default-browser-check",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--enable-webgl",
+        "--ignore-certificate-errors",
+        "--lang=en-US,en;q=0.9",
+        "--password-store=basic",
+        "--disable-gpu-sandbox",
+        "--disable-software-rasterizer",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding",
+        "--disable-infobars",
+        "--disable-breakpad",
+        "--disable-canvas-aa",
+        "--disable-2d-canvas-clip-aa",
+        "--disable-gl-drawing-for-tests",
+        "--enable-low-end-device-mode",
+        "--disable-extensions-except=D:/Users/AGUSTIN/Desktop/Proyectos/ruc-scrapper/plugin",
+        "--load-extension=D:/Users/AGUSTIN/Desktop/Proyectos/ruc-scrapper/plugin",
+      ],
+      executablePath:
+        "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
     });
     const [page] = await browser.pages();
     page.setDefaultNavigationTimeout(0);
@@ -69,13 +121,27 @@ import { launch } from "puppeteer";
     });
   };
   let working = 1;
-  while (working) {
-    try {
-      const data = await handleFetch("1303185639001");
-      console.log(data[0]);
-      working = 0;
-    } catch (error) {
-      console.log(error);
-    }
+  // while (working) {
+  try {
+    const data = await handleFetch("0791779618001");
+    console.log(data[0]);
+    working = 0;
+  } catch (error) {
+    console.log(error);
   }
+  // }
 })();
+
+// 0700291214001
+// 0702142126001
+// 0702537630001
+// 0703391292001
+// 0705205847001
+// 0790084462001
+// 0790102584001
+// 0791722497001
+// 0791737931001
+// 0791744121001
+// 0791758947001
+// 0791779618001
+// 0791798752001
