@@ -61,7 +61,7 @@ import "dotenv/config";
 
     await server();
     page.on("console", async (msg) => {
-      console.log(msg);
+      // console.log(msg);
       if (msg.type() === "error") {
         console.log("Error");
         const homeButton = await page.$(
@@ -79,13 +79,25 @@ import "dotenv/config";
         timeout: 15000,
       }
     );
+
     const data = await res.json();
+    const establecimientoButton = await page.waitForSelector(
+      "#sribody > sri-root > div > div.layout-main > div > div > sri-consulta-ruc-web-app > div > sri-ruta-ruc > div.row.ng-star-inserted > div.col-sm-12.text-aling-center.ng-star-inserted > div.row.text-aling-center > div:nth-child(2) > div > div:nth-child(4) > button"
+    );
+    await establecimientoButton.click();
+    const establecimientos = await page.waitForResponse(
+      `https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/Establecimiento/consultarPorNumeroRuc?numeroRuc=${ruc}`
+    );
+    const dataEstablecimientos = await establecimientos.json();
     await browser.close();
-    return data;
+    return {
+      ...data[0],
+      establecimientos: dataEstablecimientos,
+    };
   };
   try {
     const data = await handleFetch("0791758947001");
-    console.log(data[0]);
+    console.log(data);
   } catch (error) {
     console.log(error);
   }
